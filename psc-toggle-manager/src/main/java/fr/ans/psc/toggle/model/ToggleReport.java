@@ -28,7 +28,7 @@ public class ToggleReport {
                         "%s PsRefs déjà basculés.\n" +
                         "%s PsRefs basculés avec succès.\n" +
                         "%s PsRefs n'ont pas pu être basculés.\n\n" +
-                        "Vous trouverez la liste des opérations en pièce jointe",
+                        "Vous trouverez la liste des opérations en pièce jointe.",
                 submitted, alreadyToggled, successful, failed);
     }
 }
