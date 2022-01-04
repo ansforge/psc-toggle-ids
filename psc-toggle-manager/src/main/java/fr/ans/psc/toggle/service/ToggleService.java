@@ -1,18 +1,20 @@
-package fr.ans.psc.toggleManager.service;
+package fr.ans.psc.toggle.service;
 
 import fr.ans.psc.ApiClient;
-import fr.ans.psc.api.PsApi;
 import fr.ans.psc.api.ToggleApi;
-import fr.ans.psc.model.PsRef;
-import fr.ans.psc.toggleManager.exception.ToggleFileParsingException;
-import fr.ans.psc.toggleManager.model.TogglePsRef;
+import fr.ans.psc.toggle.exception.ToggleFileParsingException;
+import fr.ans.psc.toggle.model.TogglePsRef;
+import fr.ans.psc.toggle.model.ToggleReport;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.any23.encoding.TikaEncodingDetector;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.common.ParsingContext;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.common.processor.ObjectRowProcessor;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.csv.CsvParser;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.csv.CsvParserSettings;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +23,6 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 @Service
 @Slf4j
@@ -31,10 +32,41 @@ public class ToggleService {
     private final String FAILURE_REPORT_FILENAME = "pscload_rapport_des_échecs_de_bascule.csv";
     private static final int TOGGLE_ROW_LENGTH = 2;
 
+    @Autowired
+    private EmailService emailService;
+
     @Value("${api.base.url}")
     private String apiBaseUrl;
 
-    public File uploadToggleFile(MultipartFile mpFile) throws IOException {
+    @Value("${enable.emailing}")
+    private boolean enableEmailing;
+
+    @Async("processExecutor")
+    public void toggle(MultipartFile mpFile) {
+        try {
+            File toggleFile = uploadToggleFile(mpFile);
+            Map<String, TogglePsRef> psRefMap = loadPSRefMapFromFile(toggleFile);
+            togglePsRefs(psRefMap);
+            if (enableEmailing) {
+                reportToggleErrors(psRefMap);
+            }
+
+        } catch (ToggleFileParsingException tpe) {
+            log.error("Error during parsing toggle file", tpe);
+        } catch (FileNotFoundException fnfe) {
+            log.error("Could not find csv output file");
+        } catch (IOException ioe) {
+            log.error("Error during tempFile creation", ioe);
+        }
+
+    }
+
+    /**
+     * @param mpFile the file attached to the http request
+     * @return the tempFile later used to load PsRefMap
+     * @throws IOException if can't access mpFile
+     */
+    File uploadToggleFile(MultipartFile mpFile) throws IOException {
         InputStream initialStream = mpFile.getInputStream();
         byte[] buffer = new byte[initialStream.available()];
         initialStream.read(buffer);
@@ -52,7 +84,7 @@ public class ToggleService {
      *
      * @throws ToggleFileParsingException the ToggleFile parsing exception
      */
-    public Map<String, TogglePsRef> loadPSRefMapFromFile(File toggleFile) throws ToggleFileParsingException {
+    Map<String, TogglePsRef> loadPSRefMapFromFile(File toggleFile) throws ToggleFileParsingException {
         log.info("loading {} into list of PsRef", toggleFile.getName());
 
         try {
@@ -87,20 +119,23 @@ public class ToggleService {
             return psRefToggleMap;
 
         } catch (IOException e) {
-            log.error("Error during parsing toggle file", e);
             throw new ToggleFileParsingException("Error during parsing toggle file");
         }
 
     }
 
-    public void togglePsRefs(Map<String, TogglePsRef> psRefMap) {
+    /**
+     * @param psRefMap the map of ps to toggle
+     */
+    void togglePsRefs(Map<String, TogglePsRef> psRefMap) {
         ApiClient client = new ApiClient();
         client.setBasePath(apiBaseUrl);
         ToggleApi toggleApi = new ToggleApi(client);
         psRefMap.values().parallelStream().forEach(psRef -> {
             try {
                 toggleApi.togglePsref(psRef);
-                psRefMap.remove(psRef.getNationalIdRef());
+                psRef.setReturnStatus(HttpStatus.OK.value());
+//                psRefMap.remove(psRef.getNationalIdRef());
             } catch (RestClientResponseException e) {
                 log.error("error when creation of ps : {}, return code : {}", psRef.getNationalIdRef(), e.getLocalizedMessage());
                 psRef.setReturnStatus(e.getRawStatusCode());
@@ -108,22 +143,25 @@ public class ToggleService {
         });
     }
 
-    public void reportToggleErrors(Map<String, TogglePsRef> psRefMap) {
+    /**
+     * @param psRefMap the map of non toggled psref, with api return status
+     */
+    void reportToggleErrors(Map<String, TogglePsRef> psRefMap) throws FileNotFoundException {
         List<String> dataLines = new ArrayList<>();
-        psRefMap.values().stream().forEach(psRef -> {
-            String[] dataItems = new String[]{ psRef.getNationalIdRef(), psRef.getNationalId(), String.valueOf(psRef.getReturnStatus()) };
+
+        psRefMap.values().forEach(psRef -> {
+            String[] dataItems = new String[]{psRef.getNationalIdRef(), psRef.getNationalId(), String.valueOf(psRef.getReturnStatus())};
             dataLines.add(String.join(";", dataItems));
         });
 
         File csvOutputFile = new File(FAILURE_REPORT_FILENAME);
         try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
-            pw.println("original nationalId;target nationalId;code erreur");
-            dataLines.stream().forEach(pw::println);
-            // TODO send report mail
-
-            csvOutputFile.delete();
-        } catch (FileNotFoundException e) {
-            // TODO throw custom exception if pw didn't work
+            pw.println("original nationalId;target nationalId;code retour");
+            dataLines.forEach(pw::println);
         }
+        ToggleReport toggleReport = new ToggleReport();
+        toggleReport.setReportCounters(psRefMap);
+        emailService.sendMail(toggleReport.generateReportSummary(), csvOutputFile);
+        csvOutputFile.delete();
     }
 }

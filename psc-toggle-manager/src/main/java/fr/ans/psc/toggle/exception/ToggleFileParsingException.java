@@ -1,4 +1,4 @@
-package fr.ans.psc.toggleManager.exception;
+package fr.ans.psc.toggle.exception;
 
 public class ToggleFileParsingException extends RuntimeException {
 

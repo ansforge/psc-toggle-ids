@@ -1,17 +1,18 @@
-package fr.ans.psc.toggleManager;
+package fr.ans.psc.toggle.service;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import fr.ans.psc.toggleManager.model.TogglePsRef;
-import fr.ans.psc.toggleManager.service.ToggleService;
+import fr.ans.psc.toggle.ToggleManagerApplication;
+import fr.ans.psc.toggle.model.TogglePsRef;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -48,7 +49,8 @@ public class TogglePsRefsTest {
         Map<String, TogglePsRef> psRefMap = toggleService.loadPSRefMapFromFile(toggleFile);
 
         toggleService.togglePsRefs(psRefMap);
-        assertEquals(0, psRefMap.size());
+        int successful = (int) psRefMap.values().stream().filter(psRef -> psRef.getReturnStatus() == HttpStatus.OK.value()).count();
+        assertEquals(3, successful);
     }
 
     @Test
@@ -84,7 +86,7 @@ public class TogglePsRefsTest {
         Map<String, TogglePsRef> psRefMap = toggleService.loadPSRefMapFromFile(toggleFile);
 
         toggleService.togglePsRefs(psRefMap);
-        assertEquals(2, psRefMap.size());
+        assertEquals(200, psRefMap.get("0016054827").getReturnStatus());
         assertEquals(404, psRefMap.get("0016041030").getReturnStatus());
         assertEquals(409, psRefMap.get("0016054801").getReturnStatus());
     }

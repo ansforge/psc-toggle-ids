@@ -1,8 +1,8 @@
-package fr.ans.psc.toggleManager;
+package fr.ans.psc.toggle.service;
 
-import fr.ans.psc.toggleManager.exception.ToggleFileParsingException;
-import fr.ans.psc.toggleManager.model.TogglePsRef;
-import fr.ans.psc.toggleManager.service.ToggleService;
+import fr.ans.psc.toggle.ToggleManagerApplication;
+import fr.ans.psc.toggle.exception.ToggleFileParsingException;
+import fr.ans.psc.toggle.model.TogglePsRef;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

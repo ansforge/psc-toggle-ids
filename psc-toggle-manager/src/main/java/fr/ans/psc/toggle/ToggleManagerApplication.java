@@ -1,4 +1,4 @@
-package fr.ans.psc.toggleManager;
+package fr.ans.psc.toggle;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

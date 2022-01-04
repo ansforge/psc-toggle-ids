@@ -1,4 +1,4 @@
-package fr.ans.psc.toggleManager.model;
+package fr.ans.psc.toggle.model;
 
 import fr.ans.psc.model.PsRef;
 
