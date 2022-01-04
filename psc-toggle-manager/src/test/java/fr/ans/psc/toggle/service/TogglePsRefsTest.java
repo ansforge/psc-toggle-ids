@@ -6,6 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import fr.ans.psc.toggle.ToggleManagerApplication;
+import fr.ans.psc.toggle.model.PsIdType;
 import fr.ans.psc.toggle.model.TogglePsRef;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,7 +47,7 @@ public class TogglePsRefsTest {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         String rootpath = cl.getResource(".").getPath();
         File toggleFile = new File(rootpath + File.separator + "bascule.csv");
-        Map<String, TogglePsRef> psRefMap = toggleService.loadPSRefMapFromFile(toggleFile);
+        Map<String, TogglePsRef> psRefMap = toggleService.loadPSRefMapFromFile(toggleFile, PsIdType.ADELI, PsIdType.RPPS);
 
         toggleService.togglePsRefs(psRefMap);
         int successful = (int) psRefMap.values().stream().filter(psRef -> psRef.getReturnStatus() == HttpStatus.OK.value()).count();
@@ -83,7 +84,7 @@ public class TogglePsRefsTest {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         String rootpath = cl.getResource(".").getPath();
         File toggleFile = new File(rootpath + File.separator + "bascule.csv");
-        Map<String, TogglePsRef> psRefMap = toggleService.loadPSRefMapFromFile(toggleFile);
+        Map<String, TogglePsRef> psRefMap = toggleService.loadPSRefMapFromFile(toggleFile, PsIdType.ADELI, PsIdType.RPPS);
 
         toggleService.togglePsRefs(psRefMap);
         assertEquals(200, psRefMap.get("0016054827").getReturnStatus());

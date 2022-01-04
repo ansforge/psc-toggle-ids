@@ -49,11 +49,6 @@ public class PsRef implements Serializable {
         return this;
     }
 
-    public PsRef(String[] items) {
-        this.nationalIdRef = "0" + items[0];
-        this.nationalId = "8" + items[1];
-    }
-
     /**
      * Get nationalIdRef
      *

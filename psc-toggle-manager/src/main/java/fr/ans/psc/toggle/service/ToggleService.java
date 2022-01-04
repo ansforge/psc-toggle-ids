@@ -3,6 +3,7 @@ package fr.ans.psc.toggle.service;
 import fr.ans.psc.ApiClient;
 import fr.ans.psc.api.ToggleApi;
 import fr.ans.psc.toggle.exception.ToggleFileParsingException;
+import fr.ans.psc.toggle.model.PsIdType;
 import fr.ans.psc.toggle.model.TogglePsRef;
 import fr.ans.psc.toggle.model.ToggleReport;
 import lombok.extern.slf4j.Slf4j;
@@ -42,10 +43,10 @@ public class ToggleService {
     private boolean enableEmailing;
 
     @Async("processExecutor")
-    public void toggle(MultipartFile mpFile) {
+    public void toggle(MultipartFile mpFile, PsIdType originIdType, PsIdType targetIdType) {
         try {
             File toggleFile = uploadToggleFile(mpFile);
-            Map<String, TogglePsRef> psRefMap = loadPSRefMapFromFile(toggleFile);
+            Map<String, TogglePsRef> psRefMap = loadPSRefMapFromFile(toggleFile, originIdType, targetIdType);
             togglePsRefs(psRefMap);
             if (enableEmailing) {
                 reportToggleErrors(psRefMap);
@@ -84,7 +85,7 @@ public class ToggleService {
      *
      * @throws ToggleFileParsingException the ToggleFile parsing exception
      */
-    Map<String, TogglePsRef> loadPSRefMapFromFile(File toggleFile) throws ToggleFileParsingException {
+    Map<String, TogglePsRef> loadPSRefMapFromFile(File toggleFile, PsIdType originIdType, PsIdType targetIdType) throws ToggleFileParsingException {
         log.info("loading {} into list of PsRef", toggleFile.getName());
 
         try {
@@ -97,7 +98,7 @@ public class ToggleService {
                         throw new IllegalArgumentException();
                     }
                     String[] items = Arrays.asList(objects).toArray(new String[TOGGLE_ROW_LENGTH]);
-                    TogglePsRef psRefRow = new TogglePsRef(items);
+                    TogglePsRef psRefRow = new TogglePsRef(items, originIdType, targetIdType);
                     psRefToggleMap.put(psRefRow.getNationalIdRef(), psRefRow);
                 }
             };

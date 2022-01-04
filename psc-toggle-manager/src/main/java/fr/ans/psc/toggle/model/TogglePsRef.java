@@ -6,8 +6,10 @@ public class TogglePsRef extends PsRef {
 
     private int returnStatus = 100;
 
-    public TogglePsRef(String[] items) {
-        super(items);
+    public TogglePsRef(String[] items, PsIdType originIdType, PsIdType targetIdType) {
+        super();
+        setNationalIdRef(originIdType.value + items[0]);
+        setNationalId(targetIdType.value + items[1]);
     }
 
     public int getReturnStatus() {

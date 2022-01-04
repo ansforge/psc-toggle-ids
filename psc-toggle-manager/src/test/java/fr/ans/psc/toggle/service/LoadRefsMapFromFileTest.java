@@ -2,6 +2,7 @@ package fr.ans.psc.toggle.service;
 
 import fr.ans.psc.toggle.ToggleManagerApplication;
 import fr.ans.psc.toggle.exception.ToggleFileParsingException;
+import fr.ans.psc.toggle.model.PsIdType;
 import fr.ans.psc.toggle.model.TogglePsRef;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,7 @@ public class LoadRefsMapFromFileTest {
         File toggleFile = new File(rootpath + File.separator + "bascule.csv");
         assert toggleFile.exists();
 
-        Map<String, TogglePsRef> psRefMap = toggleService.loadPSRefMapFromFile(toggleFile);
+        Map<String, TogglePsRef> psRefMap = toggleService.loadPSRefMapFromFile(toggleFile, PsIdType.ADELI, PsIdType.RPPS);
         assertEquals(3, psRefMap.size());
         assertEquals("810107518424", psRefMap.get("0016041030").getNationalId());
     }
@@ -45,7 +46,7 @@ public class LoadRefsMapFromFileTest {
         assert !toggleFile.exists();
 
         Exception exception = assertThrows(ToggleFileParsingException.class, () -> {
-            toggleService.loadPSRefMapFromFile(toggleFile);
+            toggleService.loadPSRefMapFromFile(toggleFile, PsIdType.ADELI, PsIdType.RPPS);
         });
 
         String expectedMessage = "Error during parsing toggle file";

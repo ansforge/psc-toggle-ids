@@ -2,6 +2,7 @@ package fr.ans.psc.toggle.service;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import fr.ans.psc.toggle.ToggleManagerApplication;
+import fr.ans.psc.toggle.model.PsIdType;
 import fr.ans.psc.toggle.service.ToggleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -67,6 +68,6 @@ public class ToggleServiceTest {
         FileInputStream inputStream = new FileInputStream(requestFile);
         MultipartFile mpFile = new MockMultipartFile("toggleFile", inputStream);
 
-        toggleService.toggle(mpFile);
+        toggleService.toggle(mpFile, PsIdType.ADELI, PsIdType.RPPS);
     }
 }

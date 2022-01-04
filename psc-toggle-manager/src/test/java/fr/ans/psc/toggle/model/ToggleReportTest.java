@@ -22,11 +22,11 @@ public class ToggleReportTest {
     @Test
     @DisplayName("toto")
     void setCounters() {
-        TogglePsRef psRef1 = new TogglePsRef(new String[]{"123", "823"});
+        TogglePsRef psRef1 = new TogglePsRef(new String[]{"123", "823"}, PsIdType.ADELI, PsIdType.RPPS);
         psRef1.setReturnStatus(200);
-        TogglePsRef psRef2 = new TogglePsRef(new String[]{"055", "855"});
+        TogglePsRef psRef2 = new TogglePsRef(new String[]{"055", "855"}, PsIdType.ADELI, PsIdType.RPPS);
         psRef2.setReturnStatus(200);
-        TogglePsRef psRef3 = new TogglePsRef(new String[]{"089","889"});
+        TogglePsRef psRef3 = new TogglePsRef(new String[]{"089","889"}, PsIdType.ADELI, PsIdType.RPPS);
         psRef3.setReturnStatus(409);
         Map<String, TogglePsRef> psRefMap = new ConcurrentHashMap<>();
         psRefMap.put(psRef1.getNationalIdRef(), psRef1);
@@ -45,11 +45,11 @@ public class ToggleReportTest {
     @Test
     @DisplayName("titi")
     void generateReport() {
-        TogglePsRef psRef1 = new TogglePsRef(new String[]{"123", "823"});
+        TogglePsRef psRef1 = new TogglePsRef(new String[]{"123", "823"}, PsIdType.ADELI, PsIdType.RPPS);
         psRef1.setReturnStatus(200);
-        TogglePsRef psRef2 = new TogglePsRef(new String[]{"055", "855"});
+        TogglePsRef psRef2 = new TogglePsRef(new String[]{"055", "855"}, PsIdType.ADELI, PsIdType.RPPS);
         psRef2.setReturnStatus(200);
-        TogglePsRef psRef3 = new TogglePsRef(new String[]{"089","889"});
+        TogglePsRef psRef3 = new TogglePsRef(new String[]{"089","889"}, PsIdType.ADELI, PsIdType.RPPS);
         psRef3.setReturnStatus(409);
         Map<String, TogglePsRef> psRefMap = new ConcurrentHashMap<>();
         psRefMap.put(psRef1.getNationalIdRef(), psRef1);
