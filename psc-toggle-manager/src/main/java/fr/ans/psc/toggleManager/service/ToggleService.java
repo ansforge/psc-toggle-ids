@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Service
 @Slf4j
@@ -54,7 +56,7 @@ public class ToggleService {
         log.info("loading {} into list of PsRef", toggleFile.getName());
 
         try {
-            Map<String, TogglePsRef> psRefToggleMap = new HashMap<>();
+            Map<String, TogglePsRef> psRefToggleMap = new ConcurrentHashMap<String, TogglePsRef>();
 
             ObjectRowProcessor rowProcessor = new ObjectRowProcessor() {
                 @Override
@@ -101,6 +103,7 @@ public class ToggleService {
                 psRefMap.remove(psRef.getNationalIdRef());
             } catch (RestClientResponseException e) {
                 log.error("error when creation of ps : {}, return code : {}", psRef.getNationalIdRef(), e.getLocalizedMessage());
+                psRef.setReturnStatus(e.getRawStatusCode());
             }
         });
     }
