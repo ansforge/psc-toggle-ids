@@ -4,7 +4,9 @@ import fr.ans.psc.toggleManager.exception.ToggleFileParsingException;
 import fr.ans.psc.toggleManager.model.TogglePsRef;
 import fr.ans.psc.toggleManager.service.ToggleService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,20 +28,20 @@ public class ToggleController {
 
     @PostMapping(value = "/toggle", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String toggleRegistrySource(@RequestParam("toggleFile") MultipartFile mpFile) throws IOException {
+    public ResponseEntity<Void> toggleRegistrySource(@RequestParam("toggleFile") MultipartFile mpFile) throws IOException {
 
         File toggleFile = toggleService.uploadToggleFile(mpFile);
 
         try {
             Map<String, TogglePsRef> psRefMap = toggleService.loadPSRefMapFromFile(toggleFile);
             toggleService.togglePsRefs(psRefMap);
-            // TODO handle remaining maps (errors)
+            toggleService.reportToggleErrors(psRefMap);
         } catch (ToggleFileParsingException tpe) {
-            log.error("Toggle interruption : error during parsing toggle file");
-            return "Toggle interruption : error during parsing toggle file";
+            log.error("Toggle interruption : error during parsing toggle file", tpe);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         // TODO return Response entity & make service method async
-        return "bascule terminée";
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
