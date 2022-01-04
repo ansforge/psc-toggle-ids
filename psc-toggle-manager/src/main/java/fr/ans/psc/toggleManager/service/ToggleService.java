@@ -14,7 +14,6 @@ import org.junit.jupiter.params.shadow.com.univocity.parsers.csv.CsvParser;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.csv.CsvParserSettings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -109,13 +108,13 @@ public class ToggleService {
     public void reportToggleErrors(Map<String, TogglePsRef> psRefMap) {
         List<String> dataLines = new ArrayList<>();
         psRefMap.values().stream().forEach(psRef -> {
-            String[] dataItems = new String[]{ psRef.getNationalIdRef(), String.valueOf(psRef.getReturnStatus()) };
+            String[] dataItems = new String[]{ psRef.getNationalIdRef(), psRef.getNationalId(), String.valueOf(psRef.getReturnStatus()) };
             dataLines.add(String.join(";", dataItems));
         });
 
         File csvOutputFile = new File(FAILURE_REPORT_FILENAME);
         try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
-            pw.println("Entité;identifiant;opération;Http status");
+            pw.println("original nationalId;target nationalId;code erreur");
             dataLines.stream().forEach(pw::println);
             // TODO send report mail
 
