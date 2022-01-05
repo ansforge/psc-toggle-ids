@@ -40,8 +40,7 @@ job "psc-toggle-manager" {
         destination = "local/file.env"
         env = true
         data = <<EOH
-PUBLIC_HOSTNAME={{ with secret "psc-ecosystem/pscload" }}{{ .Data.data.public_hostname }}{{ end }}
-JAVA_TOOL_OPTIONS="-Xms256m -Xmx1g -XX:+UseG1GC -Dspring.config.location=/secrets/application.properties -Dhttps.proxyHost=${proxy_host} -Dhttps.proxyPort=${proxy_port} -Dhttps.nonProxyHosts=${non_proxy_hosts}"
+JAVA_TOOL_OPTIONS="-Xms256m -Xmx512m -XX:+UseG1GC -Dspring.config.location=/secrets/application.properties -Dhttps.proxyHost=${proxy_host} -Dhttps.proxyPort=${proxy_port} -Dhttps.nonProxyHosts=${non_proxy_hosts}"
 EOH
       }
 
@@ -49,8 +48,8 @@ EOH
         data = <<EOF
 server.servlet.context-path=/toggle/v1
 api.base.url=http://{{ range service "psc-api-maj-v2" }}{{ .Address }}:{{ .Port }}{{ end }}/psc-api-maj/api
-spring.servlet.multipart.max-file-size=10MB
-spring.servlet.multipart.max-request-size=10MB
+spring.servlet.multipart.max-file-size=60MB
+spring.servlet.multipart.max-request-size=60MB
 spring.mail.host={{ with secret "psc-ecosystem/emailing" }}{{ .Data.data.spring_mail_host }}{{ end }}
 spring.mail.port={{ with secret "psc-ecosystem/emailing" }}{{ .Data.data.spring_mail_port }}{{ end }}
 spring.mail.username={{ with secret "psc-ecosystem/emailing" }}{{ .Data.data.spring_mail_username }}{{ end }}
@@ -66,12 +65,12 @@ EOF
 
       resources {
         cpu = 300
-        memory = 1280
+        memory = 1024
       }
 
       service {
         name = "$\u007BNOMAD_JOB_NAME\u007D"
-        tags = ["urlprefix-/toggle/v1/"]
+        tags = ["urlprefix-/toggle/"]
         port = "http"
         check {
           type = "http"
