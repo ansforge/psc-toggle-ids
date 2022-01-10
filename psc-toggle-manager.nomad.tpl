@@ -60,7 +60,7 @@ pscload.mail.receiver={{ with secret "psc-ecosystem/emailing" }}{{ .Data.data.ma
 enable.emailing=false
 EOF
         destination = "secrets/application.properties"
-        change_lode = "restart"
+        change_mode = "restart"
       }
 
       resources {
