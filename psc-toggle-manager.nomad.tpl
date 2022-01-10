@@ -56,8 +56,8 @@ spring.mail.username={{ with secret "psc-ecosystem/emailing" }}{{ .Data.data.spr
 spring.mail.password={{ with secret "psc-ecosystem/emailing" }}{{ .Data.data.spring_mail_password }}{{ end }}
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
-pscload.mail.receiver={{ with secret "psc-ecosystem/emailing" }}{{ .Data.data.mail_receiver }}{{ end }}
-enable.emailing=false
+toggle.mail.receiver={{ with secret "psc-ecosystem/emailing" }}{{ .Data.data.mail_receiver }}{{ end }}
+enable.emailing=true
 EOF
         destination = "secrets/application.properties"
         change_mode = "restart"
