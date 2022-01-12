@@ -155,7 +155,7 @@ public class ToggleService {
             dataLines.add(String.join(";", dataItems));
         });
 
-        File csvOutputFile = new File(FAILURE_REPORT_FILENAME);
+        File csvOutputFile = new File("/app", FAILURE_REPORT_FILENAME);
         try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
             pw.println("original nationalId;target nationalId;code retour");
             dataLines.forEach(pw::println);
