@@ -170,7 +170,7 @@ public class ToggleService {
             InputStream fileContent = new FileInputStream(csvOutputFile);
             ZipEntry zipEntry = new ZipEntry(FAILURE_REPORT_FILENAME + ".csv");
             zipEntry.setTime(System.currentTimeMillis());
-            ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(FAILURE_REPORT_FILENAME + ".zip"));
+            ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("/app" + File.separator + FAILURE_REPORT_FILENAME + ".zip"));
             zos.putNextEntry(zipEntry);
             StreamUtils.copy(fileContent, zos);
 
@@ -184,7 +184,7 @@ public class ToggleService {
         }
 
         csvOutputFile.delete();
-        File zipFile = new File(FAILURE_REPORT_FILENAME + ".zip");
+        File zipFile = new File("/app", FAILURE_REPORT_FILENAME + ".zip");
         log.info("file length is " + zipFile.length());
 
         ToggleReport toggleReport = new ToggleReport();
