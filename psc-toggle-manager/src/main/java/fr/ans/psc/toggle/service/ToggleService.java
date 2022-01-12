@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ToggleService {
 
     private final String TOGGLE_FILE_NAME = "Table_de_Correspondance_bascule";
-    private final String FAILURE_REPORT_FILENAME = "/pscload_rapport_des_échecs_de_bascule.csv";
+    private final String FAILURE_REPORT_FILENAME = "pscload_rapport_des_échecs_de_bascule.csv";
     private static final int TOGGLE_ROW_LENGTH = 2;
 
     @Autowired
