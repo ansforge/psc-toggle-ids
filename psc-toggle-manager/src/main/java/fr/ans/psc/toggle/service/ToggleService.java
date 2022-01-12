@@ -134,11 +134,12 @@ public class ToggleService {
         ToggleApi toggleApi = new ToggleApi(client);
         psRefMap.values().parallelStream().forEach(psRef -> {
             try {
-                toggleApi.togglePsref(psRef);
+                String result = toggleApi.togglePsref(psRef);
+                log.info(result);
                 psRef.setReturnStatus(HttpStatus.OK.value());
 //                psRefMap.remove(psRef.getNationalIdRef());
             } catch (RestClientResponseException e) {
-                log.error("error when creation of ps : {}, return code : {}", psRef.getNationalIdRef(), e.getLocalizedMessage());
+                log.error(e.getResponseBodyAsString());
                 psRef.setReturnStatus(e.getRawStatusCode());
             }
         });

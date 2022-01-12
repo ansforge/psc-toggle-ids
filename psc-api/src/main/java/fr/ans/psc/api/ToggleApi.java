@@ -56,8 +56,8 @@ public class ToggleApi {
      * @param body  (required)
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public void togglePsref(PsRef body) throws RestClientException {
-        togglePsrefWithHttpInfo(body);
+    public String togglePsref(PsRef body) throws RestClientException {
+        return togglePsrefWithHttpInfo(body).getBody();
     }
 
     /**
@@ -71,7 +71,7 @@ public class ToggleApi {
      * @return ResponseEntity&lt;Void&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public ResponseEntity<Void> togglePsrefWithHttpInfo(PsRef body) throws RestClientException {
+    public ResponseEntity<String> togglePsrefWithHttpInfo(PsRef body) throws RestClientException {
         Object postBody = body;
         // verify the required parameter 'body' is set
         if (body == null) {
@@ -94,7 +94,7 @@ public class ToggleApi {
 
         String[] authNames = new String[] {  };
 
-        ParameterizedTypeReference<Void> returnType = new ParameterizedTypeReference<Void>() {};
+        ParameterizedTypeReference<String> returnType = new ParameterizedTypeReference<String>() {};
         return apiClient.invokeAPI(path, HttpMethod.PUT, queryParams, postBody, headerParams, formParams, accept, contentType, authNames, returnType);
     }
 }
