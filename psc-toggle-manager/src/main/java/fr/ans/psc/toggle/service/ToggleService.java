@@ -155,9 +155,8 @@ public class ToggleService {
             dataLines.add(String.join(";", dataItems));
         });
 
-        File csvOutputFile = new File(FAILURE_REPORT_FILENAME);
-        String fileExists = "csv file exists ? ";
-        log.info(fileExists + csvOutputFile.exists());
+        File parentFolder = new File(Thread.currentThread().getContextClassLoader().getResource(".").getPath());
+        File csvOutputFile = new File(parentFolder, FAILURE_REPORT_FILENAME);
         try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
             pw.println("original nationalId;target nationalId;code retour");
             dataLines.forEach(pw::println);
