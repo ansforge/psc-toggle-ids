@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,13 +25,16 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 @Service
 @Slf4j
 public class ToggleService {
 
     private final String TOGGLE_FILE_NAME = "Table_de_Correspondance_bascule";
-    private final String FAILURE_REPORT_FILENAME = "pscload_rapport_des_échecs_de_bascule.csv";
+    private final String FAILURE_REPORT_FILENAME = "pscload_rapport_des_échecs_de_bascule";
     private static final int TOGGLE_ROW_LENGTH = 2;
 
     @Autowired
@@ -156,14 +160,36 @@ public class ToggleService {
             dataLines.add(String.join(";", dataItems));
         });
 
-        File csvOutputFile = new File("/app", FAILURE_REPORT_FILENAME);
+        File csvOutputFile = new File("/app", FAILURE_REPORT_FILENAME + ".csv");
         try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
             pw.println("original nationalId;target nationalId;code retour");
             dataLines.forEach(pw::println);
         }
+
+        try {
+            InputStream fileContent = new FileInputStream(csvOutputFile);
+            ZipEntry zipEntry = new ZipEntry(FAILURE_REPORT_FILENAME + ".csv");
+            zipEntry.setTime(System.currentTimeMillis());
+            ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(FAILURE_REPORT_FILENAME + ".zip"));
+            zos.putNextEntry(zipEntry);
+            StreamUtils.copy(fileContent, zos);
+
+            fileContent.close();
+            zos.closeEntry();
+            zos.finish();
+            zos.close();
+
+        } catch (IOException e) {
+            log.error("error during zipping", e);
+        }
+
+        csvOutputFile.delete();
+        File zipFile = new File(FAILURE_REPORT_FILENAME + ".zip");
+        log.info("file length is " + zipFile.length());
+
         ToggleReport toggleReport = new ToggleReport();
         toggleReport.setReportCounters(psRefMap);
-        emailService.sendMail(toggleReport.generateReportSummary(), csvOutputFile);
-        csvOutputFile.delete();
+        emailService.sendMail(toggleReport.generateReportSummary(), zipFile);
+
     }
 }
