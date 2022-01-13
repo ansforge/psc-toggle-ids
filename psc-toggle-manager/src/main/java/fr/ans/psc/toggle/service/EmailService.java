@@ -24,7 +24,7 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String sender;
 
-    @Value(("${toggle.mail.receiver}"))
+    @Value("${toggle.mail.receiver}")
     private String receiver;
 
     @Autowired
