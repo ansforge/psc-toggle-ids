@@ -28,7 +28,12 @@ public class ToggleReport {
                         "%s PsRefs déjà basculés.\n" +
                         "%s PsRefs basculés avec succès.\n" +
                         "%s PsRefs n'ont pas pu être basculés.\n\n" +
-                        "Vous trouverez la liste des opérations en pièce jointe.",
+                        "Vous trouverez la liste des opérations en pièce jointe.\n\n" +
+                        "Les erreurs possibles sont les suivantes :\n" +
+                        "- 404 : Le Ps proposé n'est pas présent en base, n'a pas été basculé.\n" +
+                        "- 409 : Le Ps proposé est déjà basculé comme souhaité.\n" +
+                        "- 410 : Le Ps cible vers lequel basculer n'est pas présent en base, n'a pas été basculé.\n" +
+                        "- 500 : Erreur côté serveur, veuillez vous rapprocher de l'administrateur.",
                 submitted, alreadyToggled, successful, failed);
     }
 }

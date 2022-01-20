@@ -147,6 +147,7 @@ public class ToggleService {
                 psRef.setReturnStatus(e.getRawStatusCode());
             }
         });
+        log.info("All PsRefs have been treated.");
     }
 
     /**
