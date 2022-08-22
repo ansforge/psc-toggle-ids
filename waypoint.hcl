@@ -30,7 +30,8 @@ app "prosanteconnect/psc-toggle-manager" {
       use "docker" {
         image = "${var.registry_path}/psc-toggle-manager"
         tag = gitrefpretty()
-        encoded_auth = filebase64("/secrets/dockerAuth.json")
+        username = var.registry_username
+        password = var.registry_password
       }
     }
   }
@@ -52,6 +53,16 @@ app "prosanteconnect/psc-toggle-manager" {
 variable "datacenter" {
   type = string
   default = "dc1"
+}
+
+variable "registry_username" {
+  type    = string
+  default = ""
+}
+
+variable "registry_password" {
+  type    = string
+  default = ""
 }
 
 variable "proxy_port" {
