@@ -53,6 +53,11 @@ server.servlet.context-path=/toggle/v1
 api.base.url=http://{{ range service "${nomad_namespace}-psc-api-maj-v2" }}{{ .Address }}:{{ .Port }}{{ end }}/psc-api-maj/api
 spring.servlet.multipart.max-file-size=60MB
 spring.servlet.multipart.max-request-size=60MB
+{{ range service "${nomad_namespace}-psc-rabbitmq" }}
+spring.rabbitmq.host={{ .Address }}
+spring.rabbitmq.port={{ .Port }}{{ end }}
+spring.rabbitmq.username={{ with secret "psc-ecosystem/${nomad_namespace}/rabbitmq" }}{{ .Data.data.user }}
+spring.rabbitmq.password={{ .Data.data.password }}{{ end }}
 spring.mail.host={{ with secret "psc-ecosystem/${nomad_namespace}/admin" }}{{ .Data.data.mail_server_host }}{{ end }}
 spring.mail.port={{ with secret "psc-ecosystem/${nomad_namespace}/admin" }}{{ .Data.data.mail_server_port }}{{ end }}
 spring.mail.username={{ with secret "psc-ecosystem/${nomad_namespace}/admin" }}{{ .Data.data.mail_username }}{{ end }}
