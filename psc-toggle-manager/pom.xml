@@ -27,6 +27,15 @@
             <version>2.2.22</version>
         </dependency>
         <dependency>
+            <groupId>fr.ans.psc</groupId>
+            <artifactId>psc-rabbitmq-conf</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
@@ -118,6 +127,14 @@
         <repository>
             <id>psc-api-client-mvn-repo</id>
             <url>https://github.com/prosanteconnect/psc-api-client/raw/psc-api-test-mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>psc-rabbitmq-mvn-repo</id>
+            <url>https://github.com/prosanteconnect/psc-ecosystem-components/raw/rabbitmq-mvn-repo/</url>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
