@@ -20,12 +20,15 @@ public class MessageProducer {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void sendPsMessage(Ps ps) {
+    public void sendPsMessage(Ps ps, String operation) {
         log.debug("Sending message for Ps {}", ps.getNationalId());
+        String routingKey = operation.equalsIgnoreCase("UPDATE") ?
+                PS_UPDATE_MESSAGES_QUEUE_ROUTING_KEY :
+                PS_DELETE_MESSAGES_QUEUE_ROUTING_KEY ;
 
         Gson json = new Gson();
         try {
-            rabbitTemplate.convertAndSend(EXCHANGE_MESSAGES, PS_UPDATE_MESSAGES_QUEUE_ROUTING_KEY, json.toJson(ps));
+            rabbitTemplate.convertAndSend(EXCHANGE_MESSAGES, routingKey, json.toJson(ps));
         } catch (AmqpException e) {
             log.error("Error occurred when sending Ps {} informations to queue manager", ps.getNationalId());
             e.printStackTrace();

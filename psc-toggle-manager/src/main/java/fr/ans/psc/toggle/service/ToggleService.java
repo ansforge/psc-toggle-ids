@@ -148,8 +148,9 @@ public class ToggleService {
                 log.info(result);
                 psRef.setReturnStatus(HttpStatus.OK.value());
                 Ps ps = psApi.getPsById(psRef.getNationalId());
-                messageProducer.sendPsMessage(ps);
-//                psRefMap.remove(psRef.getNationalIdRef());
+                messageProducer.sendPsMessage(ps, "UPDATE");
+                Ps old = new Ps().nationalId(psRef.getNationalIdRef());
+                messageProducer.sendPsMessage(old, "DELETE");
             } catch (RestClientResponseException e) {
                 log.error(e.getResponseBodyAsString());
                 psRef.setReturnStatus(e.getRawStatusCode());
