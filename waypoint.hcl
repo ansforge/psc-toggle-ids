@@ -42,9 +42,6 @@ app "prosanteconnect/psc-toggle-manager" {
       jobspec = templatefile("${path.app}/psc-toggle-manager.nomad.tpl", {
         datacenter = var.datacenter
         nomad_namespace = var.nomad_namespace
-        proxy_port = var.proxy_port
-        proxy_host = var.proxy_host
-        non_proxy_hosts = var.non_proxy_hosts
         registry_path = var.registry_username
       })
     }
