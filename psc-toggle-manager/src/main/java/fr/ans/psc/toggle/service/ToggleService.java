@@ -1,7 +1,9 @@
 package fr.ans.psc.toggle.service;
 
 import fr.ans.psc.ApiClient;
+import fr.ans.psc.api.PsApi;
 import fr.ans.psc.api.ToggleApi;
+import fr.ans.psc.model.Ps;
 import fr.ans.psc.toggle.exception.ToggleFileParsingException;
 import fr.ans.psc.toggle.model.PsIdType;
 import fr.ans.psc.toggle.model.TogglePsRef;
@@ -36,6 +38,9 @@ public class ToggleService {
     private final String TOGGLE_FILE_NAME = "Table_de_Correspondance_bascule";
     private final String FAILURE_REPORT_FILENAME = "pscload_rapport_des_echecs_de_bascule";
     private static final int TOGGLE_ROW_LENGTH = 2;
+
+    @Autowired
+    private MessageProducer messageProducer;
 
     @Autowired
     private EmailService emailService;
@@ -136,12 +141,16 @@ public class ToggleService {
         ApiClient client = new ApiClient();
         client.setBasePath(apiBaseUrl);
         ToggleApi toggleApi = new ToggleApi(client);
+        PsApi psApi = new PsApi(client);
         psRefMap.values().parallelStream().forEach(psRef -> {
             try {
                 String result = toggleApi.togglePsref(psRef);
                 log.info(result);
                 psRef.setReturnStatus(HttpStatus.OK.value());
-//                psRefMap.remove(psRef.getNationalIdRef());
+                Ps ps = psApi.getPsById(psRef.getNationalId());
+                messageProducer.sendPsMessage(ps, "UPDATE");
+                Ps old = new Ps().nationalId(psRef.getNationalIdRef());
+                messageProducer.sendPsMessage(old, "DELETE");
             } catch (RestClientResponseException e) {
                 log.error(e.getResponseBodyAsString());
                 psRef.setReturnStatus(e.getRawStatusCode());
