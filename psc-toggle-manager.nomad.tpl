@@ -42,7 +42,7 @@ job "psc-toggle-manager" {
         destination = "local/file.env"
         env = true
         data = <<EOH
-JAVA_TOOL_OPTIONS="-Xms256m -Xmx512m -XX:+UseG1GC -Dspring.config.location=/secrets/application.properties -Dhttps.proxyHost=${proxy_host} -Dhttps.proxyPort=${proxy_port} -Dhttps.nonProxyHosts=${non_proxy_hosts}"
+JAVA_TOOL_OPTIONS="-Xms256m -Xmx512m -XX:+UseG1GC -Dspring.config.location=/secrets/application.properties"
 PUBLIC_HOSTNAME={{ with secret "psc-ecosystem/${nomad_namespace}/pscload" }}{{ .Data.data.public_hostname }}{{ end }}
 EOH
       }
@@ -53,6 +53,11 @@ server.servlet.context-path=/toggle/v1
 api.base.url=http://{{ range service "${nomad_namespace}-psc-api-maj-v2" }}{{ .Address }}:{{ .Port }}{{ end }}/psc-api-maj/api
 spring.servlet.multipart.max-file-size=60MB
 spring.servlet.multipart.max-request-size=60MB
+{{ range service "${nomad_namespace}-psc-rabbitmq" }}
+spring.rabbitmq.host={{ .Address }}
+spring.rabbitmq.port={{ .Port }}{{ end }}
+spring.rabbitmq.username={{ with secret "psc-ecosystem/${nomad_namespace}/rabbitmq" }}{{ .Data.data.user }}
+spring.rabbitmq.password={{ .Data.data.password }}{{ end }}
 spring.mail.host={{ with secret "psc-ecosystem/${nomad_namespace}/admin" }}{{ .Data.data.mail_server_host }}{{ end }}
 spring.mail.port={{ with secret "psc-ecosystem/${nomad_namespace}/admin" }}{{ .Data.data.mail_server_port }}{{ end }}
 spring.mail.username={{ with secret "psc-ecosystem/${nomad_namespace}/admin" }}{{ .Data.data.mail_username }}{{ end }}

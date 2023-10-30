@@ -23,14 +23,14 @@ app "prosanteconnect/psc-toggle-manager" {
   # we'll build using a Dockerfile and keeping it in a local registry.
   build {
     use "docker" {
-      dockerfile = "${path.app}/${var.dockerfile_path}"
+      build_args         = {"PROSANTECONNECT_PACKAGE_GITHUB_TOKEN" = "${var.github_token}" }
       disable_entrypoint = true
     }
     # Uncomment below to use a remote docker registry to push your built images.
     registry {
       use "docker" {
-        image = "${var.registry_username}/psc-toggle-manager"
-        tag = gitrefpretty()
+        image    = "${var.registry_username}/psc-toggle-manager"
+        tag      = gitrefpretty()
         username = var.registry_username
         password = var.registry_password
       }
@@ -41,59 +41,43 @@ app "prosanteconnect/psc-toggle-manager" {
   deploy {
     use "nomad-jobspec" {
       jobspec = templatefile("${path.app}/psc-toggle-manager.nomad.tpl", {
-        datacenter = var.datacenter
+        datacenter      = var.datacenter
         nomad_namespace = var.nomad_namespace
-        proxy_port = var.proxy_port
-        proxy_host = var.proxy_host
-        non_proxy_hosts = var.non_proxy_hosts
-        registry_path = var.registry_username
+        registry_path   = var.registry_username
       })
     }
   }
 }
 
 variable "datacenter" {
-  type = string
+  type    = string
   default = ""
-  env = ["NOMAD_DATACENTER"]
+  env     = ["NOMAD_DATACENTER"]
 }
 
 variable "nomad_namespace" {
-  type = string
+  type    = string
   default = ""
-  env = ["NOMAD_NAMESPACE"]
+  env     = ["NOMAD_NAMESPACE"]
 }
 
 variable "registry_username" {
-  type    = string
-  default = ""
-  env     = ["REGISTRY_USERNAME"]
+  type      = string
+  default   = ""
+  env       = ["REGISTRY_USERNAME"]
   sensitive = true
 }
 
 variable "registry_password" {
-  type    = string
-  default = ""
-  env     = ["REGISTRY_PASSWORD"]
+  type      = string
+  default   = ""
+  env       = ["REGISTRY_PASSWORD"]
   sensitive = true
 }
 
-variable "proxy_port" {
-  type = string
-  default = ""
-}
-
-variable "proxy_host" {
-  type = string
-  default = ""
-}
-
-variable "non_proxy_hosts" {
-  type = string
-  default = "10.0.0.0/8"
-}
-
-variable "dockerfile_path" {
-  type = string
-  default = "Dockerfile.ext"
+variable "github_token" {
+  type      = string
+  default   = ""
+  env       = ["PROSANTECONNECT_PACKAGE_GITHUB_TOKEN"]
+  sensitive = true
 }
