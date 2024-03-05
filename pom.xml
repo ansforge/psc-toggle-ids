@@ -38,6 +38,36 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+                        <!-- license  mvn license:format -->
+                        <plugin>
+                          <groupId>com.mycila</groupId>
+                          <artifactId>license-maven-plugin</artifactId>
+                          <version>2.11</version>
+                          <configuration>
+                            <header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</header>
+                            <properties>
+                              <owner>Agence du Numérique en Santé (ANS)</owner>
+                              <email>https://esante.gouv.fr</email>
+                            </properties>
+                            <excludes>
+                              <exclude>mvnw.cmd</exclude>
+                              <exclude>.mvn/**</exclude>
+                              <exclude>LICENSE.txt</exclude>
+                              <exclude>src/test/resources/**</exclude>
+                              <exclude>settings-docker.xml</exclude>
+                            </excludes>
+                          </configuration>
+                          <executions>
+                            <execution>
+                              <id>license-check</id>
+                              <goals>
+                                <goal>check</goal>
+                              </goals>
+                              <phase>validate</phase>
+                            </execution>
+                          </executions>
+                        </plugin>
+                        <!-- END license -->
 		</plugins>
 	</build>
 
