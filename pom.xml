@@ -72,6 +72,9 @@
                               <exclude>LICENSE.txt</exclude>
                               <exclude>settings-docker.xml</exclude>
                             </excludes>
+                            <mapping>
+                              <hcl>SLASHSTAR_STYLE</hcl>
+                            </mapping>
                           </configuration>
                           <executions>
                             <execution>
