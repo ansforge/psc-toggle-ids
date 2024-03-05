@@ -15,12 +15,9 @@
  */
 package fr.ans.psc.toggle.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import fr.ans.psc.model.Ps;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import fr.ans.psc.toggle.ToggleManagerApplication;
@@ -52,13 +49,13 @@ public class TogglePsRefsTest {
     static WireMockExtension httpApiMockServer = WireMockExtension.newInstance().build();
 
     @DynamicPropertySource
-    static void registerPgProperties(DynamicPropertyRegistry propertiesRegistry) {
+    public static void registerPgProperties(DynamicPropertyRegistry propertiesRegistry) {
         propertiesRegistry.add("api.base.url", () -> httpApiMockServer.baseUrl());
     }
 
     @Test
     @DisplayName("should successfully toggle PsRefs")
-    void successfulToggle() {
+    public void successfulToggle() {
         httpApiMockServer.stubFor(put("/v2/toggle")
         .willReturn(aResponse().withStatus(200)));
         httpApiMockServer.stubFor(get("/v2/ps/810107517681")
@@ -83,7 +80,7 @@ public class TogglePsRefsTest {
 
     @Test
     @DisplayName("should handle 4xx return codes")
-    void toggleWithErrors() throws JsonProcessingException {
+    public void toggleWithErrors() {
         httpApiMockServer.stubFor(put("/v2/toggle").withRequestBody(equalToJson(
                 "{\"returnStatus\":100," +
                         "\"nationalIdRef\":\"0016041030\"," +
