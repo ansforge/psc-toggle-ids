@@ -74,6 +74,7 @@
                               <exclude>settings-docker.xml</exclude>
                             </excludes>
                             <mapping>
+                              <gitattributes>SCRIPT_STYLE</gitattributes>
                               <hcl>SLASHSTAR_STYLE</hcl>
                               <nomad.tpl>SLASHSTAR_STYLE</nomad.tpl>
                             </mapping>
