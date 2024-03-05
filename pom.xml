@@ -67,6 +67,7 @@
                               <email>https://esante.gouv.fr</email>
                             </properties>
                             <excludes>
+                              <exclude>**/*.csv</exclude>
                               <exclude>mvnw</exclude>
                               <exclude>mvnw.cmd</exclude>
                               <exclude>.mvn/**</exclude>
