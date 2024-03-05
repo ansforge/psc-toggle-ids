@@ -75,6 +75,7 @@
                             </excludes>
                             <mapping>
                               <hcl>SLASHSTAR_STYLE</hcl>
+                              <nomad.tpl>SLASHSTAR_STYLE</nomad.tpl>
                             </mapping>
                           </configuration>
                           <executions>
