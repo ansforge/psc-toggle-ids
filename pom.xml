@@ -65,6 +65,7 @@
                             <properties>
                               <owner>Agence du Numérique en Santé (ANS)</owner>
                               <email>https://esante.gouv.fr</email>
+                              <project.inceptionYear>2022-2024</project.inceptionYear> 
                             </properties>
                             <excludes>
                               <exclude>**/*.csv</exclude>
