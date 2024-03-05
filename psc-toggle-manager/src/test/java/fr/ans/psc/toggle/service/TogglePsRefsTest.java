@@ -61,11 +61,11 @@ public class TogglePsRefsTest {
         httpApiMockServer.stubFor(get("/v2/ps/810107517681")
            .willReturn(okJson("{\"nationalId\": \"810107517681\","+
                                 "\"nationalIdRef\": \"0016054827\"}")));
-        httpApiMockServer.stubFor(get("/v2/ps/10107583576")
-           .willReturn(okJson("{\"nationalId\": \"10107583576\","+
+        httpApiMockServer.stubFor(get("/v2/ps/810107583576")
+           .willReturn(okJson("{\"nationalId\": \"810107583576\","+
                                 "\"nationalIdRef\": \"016054801\"}")));
-        httpApiMockServer.stubFor(get("/v2/ps/10107518424")
-           .willReturn(okJson("{\"nationalId\": \"10107518424\","+
+        httpApiMockServer.stubFor(get("/v2/ps/810107518424")
+           .willReturn(okJson("{\"nationalId\": \"810107518424\","+
                                 "\"nationalIdRef\": \"016041030\"}")));
 
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
