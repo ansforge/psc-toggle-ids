@@ -15,9 +15,12 @@
  */
 package fr.ans.psc.toggle.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import fr.ans.psc.model.Ps;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import fr.ans.psc.toggle.ToggleManagerApplication;
@@ -58,6 +61,15 @@ public class TogglePsRefsTest {
     void successfulToggle() {
         httpApiMockServer.stubFor(put("/v2/toggle")
         .willReturn(aResponse().withStatus(200)));
+        httpApiMockServer.stubFor(get("/v2/ps/810107517681")
+           .willReturn(okJson("{\"nationalId\": \"810107517681\","+
+                                "\"nationalIdRef\": \"0016054827\"}")));
+        httpApiMockServer.stubFor(get("/v2/ps/10107583576")
+           .willReturn(okJson("{\"nationalId\": \"10107583576\","+
+                                "\"nationalIdRef\": \"016054801\"}")));
+        httpApiMockServer.stubFor(get("/v2/ps/10107518424")
+           .willReturn(okJson("{\"nationalId\": \"10107518424\","+
+                                "\"nationalIdRef\": \"016041030\"}")));
 
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         String rootpath = cl.getResource(".").getPath();
@@ -71,7 +83,7 @@ public class TogglePsRefsTest {
 
     @Test
     @DisplayName("should handle 4xx return codes")
-    void toggleWithErrors() {
+    void toggleWithErrors() throws JsonProcessingException {
         httpApiMockServer.stubFor(put("/v2/toggle").withRequestBody(equalToJson(
                 "{\"returnStatus\":100," +
                         "\"nationalIdRef\":\"0016041030\"," +
@@ -95,6 +107,10 @@ public class TogglePsRefsTest {
                         "\"activated\":null," +
                         "\"deactivated\":null}"))
                 .willReturn(aResponse().withStatus(200)));
+      
+       httpApiMockServer.stubFor(get("/v2/ps/810107517681")
+           .willReturn(okJson("{\"nationalId\": \"810107517681\","+
+                                "\"nationalIdRef\": \"0016054827\"}")));
 
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         String rootpath = cl.getResource(".").getPath();
