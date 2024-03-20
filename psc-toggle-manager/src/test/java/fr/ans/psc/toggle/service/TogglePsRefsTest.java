@@ -49,15 +49,24 @@ public class TogglePsRefsTest {
     static WireMockExtension httpApiMockServer = WireMockExtension.newInstance().build();
 
     @DynamicPropertySource
-    static void registerPgProperties(DynamicPropertyRegistry propertiesRegistry) {
+    public static void registerPgProperties(DynamicPropertyRegistry propertiesRegistry) {
         propertiesRegistry.add("api.base.url", () -> httpApiMockServer.baseUrl());
     }
 
     @Test
     @DisplayName("should successfully toggle PsRefs")
-    void successfulToggle() {
+    public void successfulToggle() {
         httpApiMockServer.stubFor(put("/v2/toggle")
         .willReturn(aResponse().withStatus(200)));
+        httpApiMockServer.stubFor(get("/v2/ps/810107517681")
+           .willReturn(okJson("{\"nationalId\": \"810107517681\","+
+                                "\"nationalIdRef\": \"0016054827\"}")));
+        httpApiMockServer.stubFor(get("/v2/ps/810107583576")
+           .willReturn(okJson("{\"nationalId\": \"810107583576\","+
+                                "\"nationalIdRef\": \"016054801\"}")));
+        httpApiMockServer.stubFor(get("/v2/ps/810107518424")
+           .willReturn(okJson("{\"nationalId\": \"810107518424\","+
+                                "\"nationalIdRef\": \"016041030\"}")));
 
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         String rootpath = cl.getResource(".").getPath();
@@ -71,7 +80,7 @@ public class TogglePsRefsTest {
 
     @Test
     @DisplayName("should handle 4xx return codes")
-    void toggleWithErrors() {
+    public void toggleWithErrors() {
         httpApiMockServer.stubFor(put("/v2/toggle").withRequestBody(equalToJson(
                 "{\"returnStatus\":100," +
                         "\"nationalIdRef\":\"0016041030\"," +
@@ -95,6 +104,10 @@ public class TogglePsRefsTest {
                         "\"activated\":null," +
                         "\"deactivated\":null}"))
                 .willReturn(aResponse().withStatus(200)));
+      
+       httpApiMockServer.stubFor(get("/v2/ps/810107517681")
+           .willReturn(okJson("{\"nationalId\": \"810107517681\","+
+                                "\"nationalIdRef\": \"0016054827\"}")));
 
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         String rootpath = cl.getResource(".").getPath();
