@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright © ${year} Agence du Numérique en Santé (ANS) (https://esante.gouv.fr)
+    Copyright © 2022-2024 Agence du Numérique en Santé (ANS) (https://esante.gouv.fr)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@
 	<version>0.0.2-SNAPSHOT</version>
 	<name>toggle-manager</name>
 	<description>Component for toggling PsRef (link from one Ps.nationalId to another one)</description>
+        <inceptionYear>2022</inceptionYear>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
@@ -65,7 +66,7 @@
                             <properties>
                               <owner>Agence du Numérique en Santé (ANS)</owner>
                               <email>https://esante.gouv.fr</email>
-                              <project.inceptionYear>2022-2024</project.inceptionYear> 
+                              <year>${project.inceptionYear}-2024</year> 
                             </properties>
                             <excludes>
                               <exclude>**/*.csv</exclude>

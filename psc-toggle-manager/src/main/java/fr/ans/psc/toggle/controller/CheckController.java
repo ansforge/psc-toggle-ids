@@ -1,5 +1,5 @@
 /*
- * Copyright © ${year} Agence du Numérique en Santé (ANS) (https://esante.gouv.fr)
+ * Copyright © 2022-2024 Agence du Numérique en Santé (ANS) (https://esante.gouv.fr)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
