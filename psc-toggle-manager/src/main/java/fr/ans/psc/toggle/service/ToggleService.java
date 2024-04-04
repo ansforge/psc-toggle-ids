@@ -39,7 +39,9 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
@@ -162,7 +164,7 @@ public class ToggleService {
                 String result = toggleApi.togglePsref(psRef);
                 log.info(result);
                 psRef.setReturnStatus(HttpStatus.OK.value());
-                Ps ps = psApi.getPsById(psRef.getNationalId());
+                Ps ps = psApi.getPsById(URLEncoder.encode(psRef.getNationalId(), StandardCharsets.UTF_8));
                 messageProducer.sendPsMessage(ps, "UPDATE");
                 Ps old = new Ps().nationalId(psRef.getNationalIdRef());
                 messageProducer.sendPsMessage(old, "DELETE");
