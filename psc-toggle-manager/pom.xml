@@ -26,7 +26,7 @@
     </parent>
 
     <artifactId>psc-toggle-manager</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3-SNAPSHOT</version>
     <name>psc-toggle-manager</name>
     <description>Component for toggling PsRef (link from one Ps nationalId to another one)</description>
 
@@ -34,6 +34,11 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
+
+    <scm>
+        <connection>scm:git:${project.basedir}</connection>
+        <tag>0.0.2</tag>
+    </scm>
 
     <dependencies>
         <dependency>
