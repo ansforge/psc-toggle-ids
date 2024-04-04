@@ -34,6 +34,10 @@
 	<name>toggle-manager</name>
 	<description>Component for toggling PsRef (link from one Ps.nationalId to another one)</description>
         <inceptionYear>2022</inceptionYear>
+	<scm>
+		<connection>scm:git:${project.basedir}</connection>
+		<tag>HEAD</tag>
+	</scm>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
