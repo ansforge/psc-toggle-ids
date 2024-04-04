@@ -17,6 +17,11 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>toggle-manager</name>
 	<description>Component for toggling PsRef (link from one Ps.nationalId to another one)</description>
+
+	<scm>
+		<connection>scm:git:${project.basedir}</connection>
+		<tag>HEAD</tag>
+	</scm>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
