@@ -30,7 +30,7 @@
 	</parent>
 	<groupId>fr.ans.psc</groupId>
 	<artifactId>toggle-manager</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<name>toggle-manager</name>
 	<description>Component for toggling PsRef (link from one Ps.nationalId to another one)</description>
         <inceptionYear>2022</inceptionYear>
