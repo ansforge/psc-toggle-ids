@@ -17,9 +17,14 @@ package fr.ans.psc.toggle.model;
 
 public enum PsIdType {
     ADELI("0"),
+    CAB_ADELI("1"),
+    DRASS("2"),
     FINESS("3"),
+    SIREN("4"),
     SIRET("5"),
+    CAB_RPPS("6"),
     RPPS("8"),
+    ETUDIANT("9"),
     RAW("");
 
     /** The value. */
