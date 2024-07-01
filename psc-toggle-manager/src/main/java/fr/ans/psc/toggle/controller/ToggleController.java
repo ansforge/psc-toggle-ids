@@ -27,8 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Locale;
-
 @Controller
 @Slf4j
 public class ToggleController {
@@ -46,5 +44,10 @@ public class ToggleController {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
-
+    @PostMapping(value = "/remove", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<Void> removeFromRegistrySource(@RequestParam("from") String from, @RequestParam("to") String to, @RequestParam("toggleFile") MultipartFile mpFile) {
+        toggleService.removeToggle(mpFile, PsIdType.valueOf(from.toUpperCase()), PsIdType.valueOf(to.toUpperCase()));
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
 }
