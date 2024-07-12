@@ -15,6 +15,7 @@
  */
 package fr.ans.psc.toggle.controller;
 
+import fr.ans.psc.toggle.exception.InvalidParameterException;
 import fr.ans.psc.toggle.model.PsIdType;
 import fr.ans.psc.toggle.service.ToggleService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +43,20 @@ public class ToggleController {
     @PostMapping(value = "/toggle", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<Void> toggleRegistrySource(@RequestParam("from") String from, @RequestParam("to") String to, @RequestParam("toggleFile") MultipartFile mpFile) {
-        toggleService.toggle(mpFile, PsIdType.valueOf(from.toUpperCase()), PsIdType.valueOf(to.toUpperCase()));
+        
+        final PsIdType sourceIdType = decodeIdType(from, "from");
+        final PsIdType destinationIdType = decodeIdType(to, "to");
+        toggleService.toggle(mpFile, sourceIdType, destinationIdType);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        
     }
 
 
+    private PsIdType decodeIdType(String name, final String parmName) {
+        try {
+            return PsIdType.valueOf(name.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidParameterException(parmName + ": " + e.getMessage(), e);
+        }
+    }
 }
