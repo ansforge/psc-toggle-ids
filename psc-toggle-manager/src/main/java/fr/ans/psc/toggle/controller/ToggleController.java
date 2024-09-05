@@ -43,14 +43,20 @@ public class ToggleController {
     @PostMapping(value = "/toggle", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<Void> toggleRegistrySource(@RequestParam("from") String from, @RequestParam("to") String to, @RequestParam("toggleFile") MultipartFile mpFile) {
-        
+
         final PsIdType sourceIdType = decodeIdType(from, "from");
         final PsIdType destinationIdType = decodeIdType(to, "to");
         toggleService.toggle(mpFile, sourceIdType, destinationIdType);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
-        
+
     }
 
+    @PostMapping(value = "/remove", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<Void> removeFromRegistrySource(@RequestParam("from") String from, @RequestParam("to") String to, @RequestParam("toggleFile") MultipartFile mpFile) {
+        toggleService.removeToggle(mpFile, PsIdType.valueOf(from.toUpperCase()), PsIdType.valueOf(to.toUpperCase()));
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
 
     private PsIdType decodeIdType(String name, final String parmName) {
         try {
