@@ -23,35 +23,25 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class ToggleReport extends Report {
+public class Report {
+    protected int successful;
+    protected int failed;
+    protected int submitted;
 
-    private int alreadyToggled;
-
-    public ToggleReport() {
-        super();
-    }
-
-    @Override
     public void setReportCounters(Map<String, TogglePsRef> psRefMap) {
         submitted = psRefMap.size();
-        alreadyToggled = (int) psRefMap.values().stream().filter(psRef -> psRef.getReturnStatus() == HttpStatus.CONFLICT.value()).count();
         successful = (int) psRefMap.values().stream().filter(psRef -> psRef.getReturnStatus() == HttpStatus.OK.value()).count();
-        failed = submitted - (alreadyToggled + successful);
+        failed = submitted - successful;
     }
 
-    @Override
     public String generateReportSummary() {
-        return String.format("Opérations de bascule terminées.\n\n" +
-                        "%s PsRefs soumis à bascule.\n" +
-                        "%s PsRefs déjà basculés.\n" +
-                        "%s PsRefs basculés avec succès.\n" +
-                        "%s PsRefs n'ont pas pu être basculés.\n\n" +
+        return String.format("Opérations terminées.\n\n" +
+                        "%s soumis.\n" +
+                        "%s en succès.\n" +
+                        "%s en échec.\n\n" +
                         "Vous trouverez la liste des opérations en pièce jointe.\n\n" +
                         "Les erreurs possibles sont les suivantes :\n" +
-                        "- 404 : Le Ps proposé n'est pas présent en base, n'a pas été basculé.\n" +
-                        "- 409 : Le Ps proposé est déjà basculé comme souhaité.\n" +
-                        "- 410 : Le Ps cible vers lequel basculer n'est pas présent en base, n'a pas été basculé.\n" +
                         "- 500 : Erreur côté serveur, veuillez vous rapprocher de l'administrateur.",
-                submitted, alreadyToggled, successful, failed);
+                submitted, successful, failed);
     }
 }

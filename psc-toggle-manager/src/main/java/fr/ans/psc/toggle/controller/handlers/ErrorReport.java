@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.ans.psc.toggle.controller;
+package fr.ans.psc.toggle.controller.handlers;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.Date;
 
-@RestController
-public class CheckController {
-
-    /**
-     * Check endpoint.
-     *
-     * @return the application status
-     */
-    @GetMapping(value = "/check")
-    public ResponseEntity<String> check() {
-        return new ResponseEntity<String>("Toggle manager is running !", HttpStatus.OK);
+/**
+ * Error report objet used to report errors to rest clients.
+ *
+ * @author edegenetais
+ */
+public class ErrorReport {
+    public final Date timestamp=new Date();
+    public final String error;
+    
+    public ErrorReport(String error) {
+      this.error = error;
     }
+    
 }
