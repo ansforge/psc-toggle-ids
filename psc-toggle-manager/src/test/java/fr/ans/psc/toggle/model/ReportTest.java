@@ -29,40 +29,35 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @ActiveProfiles("test")
 @ContextConfiguration(classes = ToggleManagerApplication.class)
-public class ToggleReportTest {
+public class ReportTest {
 
     @Test
-    @DisplayName("toto")
+    @DisplayName("tata")
     void setCounters() {
         Map<String, TogglePsRef> psRefMap = TestUtil.createTestPsRefMap();
 
-        ToggleReport report = new ToggleReport();
+        Report report = new Report();
         report.setReportCounters(psRefMap);
 
         assertEquals(3, report.getSubmitted());
-        assertEquals(1, report.getAlreadyToggled());
-        assertEquals(0, report.getFailed());
+        assertEquals(1, report.getFailed());
         assertEquals(2, report.getSuccessful());
     }
 
     @Test
-    @DisplayName("titi")
+    @DisplayName("tutu")
     void generateReport() {
         Map<String, TogglePsRef> psRefMap = TestUtil.createTestPsRefMap();
 
-        String expected = "Opérations de bascule terminées.\n\n" +
-                "3 PsRefs soumis à bascule.\n" +
-                "1 PsRefs déjà basculés.\n" +
-                "2 PsRefs basculés avec succès.\n" +
-                "0 PsRefs n'ont pas pu être basculés.\n\n" +
+        String expected = "Opérations terminées.\n\n" +
+                "3 soumis.\n" +
+                "2 en succès.\n" +
+                "1 en échec.\n\n" +
                 "Vous trouverez la liste des opérations en pièce jointe.\n\n" +
                 "Les erreurs possibles sont les suivantes :\n" +
-                "- 404 : Le Ps proposé n'est pas présent en base, n'a pas été basculé.\n" +
-                "- 409 : Le Ps proposé est déjà basculé comme souhaité.\n" +
-                "- 410 : Le Ps cible vers lequel basculer n'est pas présent en base, n'a pas été basculé.\n" +
                 "- 500 : Erreur côté serveur, veuillez vous rapprocher de l'administrateur.";
 
-        ToggleReport report = new ToggleReport();
+        Report report = new Report();
         report.setReportCounters(psRefMap);
         String actual = report.generateReportSummary();
         assertEquals(expected, actual);

@@ -1,11 +1,11 @@
-/**
- * Copyright (C) ${project.inceptionYear} Agence du Numérique en Santé (ANS) (https://esante.gouv.fr)
+/*
+ * Copyright © 2022-2024 Agence du Numérique en Santé (ANS) (https://esante.gouv.fr)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@ import fr.ans.psc.toggle.exception.ToggleFileParsingException;
 import fr.ans.psc.toggle.model.PsIdType;
 import fr.ans.psc.toggle.model.TogglePsRef;
 import fr.ans.psc.toggle.model.ToggleReport;
+import fr.ans.psc.toggle.model.UntoggleReport;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.any23.encoding.TikaEncodingDetector;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.common.ParsingContext;
@@ -45,15 +46,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 @Service
 @Slf4j
 public class ToggleService {
 
-    private final String TOGGLE_FILE_NAME = "Table_de_Correspondance_bascule";
-    private final String FAILURE_REPORT_FILENAME = "pscload_rapport_des_echecs_de_bascule";
+    private static final String TOGGLE_FILE_NAME = "Table_de_Correspondance_bascule";
+    private static final String TOGGLE_FAILURE_REPORT_FILENAME = "pscload_rapport_des_echecs_de_bascule";
+    private static final String UNTOGGLE_FAILURE_REPORT_FILENAME = "pscload_rapport_des_echecs_de_dereferencement";
     private static final int TOGGLE_ROW_LENGTH = 2;
 
     @Autowired
@@ -75,7 +76,33 @@ public class ToggleService {
             Map<String, TogglePsRef> psRefMap = loadPSRefMapFromFile(toggleFile, originIdType, targetIdType);
             togglePsRefs(psRefMap);
             if (enableEmailing) {
-                reportToggleErrors(psRefMap);
+                File zipFile = reportToggleErrors(psRefMap, TOGGLE_FAILURE_REPORT_FILENAME);
+                ToggleReport toggleReport = new ToggleReport();
+                toggleReport.setReportCounters(psRefMap);
+                emailService.sendMail(toggleReport.generateReportSummary(), zipFile);
+            }
+
+        } catch (ToggleFileParsingException tpe) {
+            log.error("Error during parsing toggle file", tpe);
+        } catch (FileNotFoundException fnfe) {
+            log.error("Could not find csv output file");
+        } catch (IOException ioe) {
+            log.error("Error during tempFile creation", ioe);
+        }
+
+    }
+
+    @Async("processExecutor")
+    public void removeToggle(MultipartFile mpFile, PsIdType originIdType, PsIdType targetIdType) {
+        try {
+            File toggleFile = uploadToggleFile(mpFile);
+            Map<String, TogglePsRef> psRefMap = loadPSRefMapFromFile(toggleFile, originIdType, targetIdType);
+            untogglePsRefs(psRefMap);
+            if (enableEmailing) {
+                File zipFile = reportToggleErrors(psRefMap, UNTOGGLE_FAILURE_REPORT_FILENAME);
+                UntoggleReport untoggleReport = new UntoggleReport();
+                untoggleReport.setReportCounters(psRefMap);
+                emailService.sendMail(untoggleReport.generateReportSummary(), zipFile);
             }
 
         } catch (ToggleFileParsingException tpe) {
@@ -177,9 +204,32 @@ public class ToggleService {
     }
 
     /**
+     * @param psRefMap the map of ps to untoggle
+     */
+    void untogglePsRefs(Map<String, TogglePsRef> psRefMap) {
+        ApiClient client = new ApiClient();
+        client.setBasePath(apiBaseUrl);
+        ToggleApi toggleApi = new ToggleApi(client);
+        PsApi psApi = new PsApi(client);
+        psRefMap.values().parallelStream().forEach(psRef -> {
+            try {
+                String result = toggleApi.removeTogglePsref(psRef);
+                log.info(result);
+                psRef.setReturnStatus(HttpStatus.OK.value());
+                Ps ps = psApi.getPsById(URLEncoder.encode(psRef.getNationalId(), StandardCharsets.UTF_8));
+                messageProducer.sendPsMessage(ps, "UPDATE");
+            } catch (RestClientResponseException e) {
+                log.error(e.getResponseBodyAsString());
+                psRef.setReturnStatus(e.getRawStatusCode());
+            }
+        });
+        log.info("All PsRefs have been treated.");
+    }
+
+    /**
      * @param psRefMap the map of non toggled psref, with api return status
      */
-    void reportToggleErrors(Map<String, TogglePsRef> psRefMap) throws FileNotFoundException {
+    File reportToggleErrors(Map<String, TogglePsRef> psRefMap, String filename) throws FileNotFoundException {
         List<String> dataLines = new ArrayList<>();
 
         psRefMap.values().forEach(psRef -> {
@@ -187,7 +237,7 @@ public class ToggleService {
             dataLines.add(String.join(";", dataItems));
         });
 
-        File csvOutputFile = new File("/app", FAILURE_REPORT_FILENAME + ".csv");
+        File csvOutputFile = new File("/app", filename + ".csv");
         try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
             pw.println("original_Id;target_Id;returned_code");
             dataLines.forEach(pw::println);
@@ -195,9 +245,9 @@ public class ToggleService {
 
         try {
             InputStream fileContent = new FileInputStream(csvOutputFile);
-            ZipEntry zipEntry = new ZipEntry(FAILURE_REPORT_FILENAME + ".csv");
+            ZipEntry zipEntry = new ZipEntry(filename + ".csv");
             zipEntry.setTime(System.currentTimeMillis());
-            ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("/app" + File.separator + FAILURE_REPORT_FILENAME + ".zip"));
+            ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("/app" + File.separator + filename + ".zip"));
             zos.putNextEntry(zipEntry);
             StreamUtils.copy(fileContent, zos);
 
@@ -211,12 +261,8 @@ public class ToggleService {
         }
 
         csvOutputFile.delete();
-        File zipFile = new File("/app", FAILURE_REPORT_FILENAME + ".zip");
+        File zipFile = new File("/app", filename + ".zip");
         log.info("file length is " + zipFile.length());
-
-        ToggleReport toggleReport = new ToggleReport();
-        toggleReport.setReportCounters(psRefMap);
-        emailService.sendMail(toggleReport.generateReportSummary(), zipFile);
-
+        return zipFile;
     }
 }

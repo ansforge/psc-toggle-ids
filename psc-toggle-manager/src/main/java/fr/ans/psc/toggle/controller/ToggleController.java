@@ -1,11 +1,11 @@
-/**
- * Copyright (C) ${project.inceptionYear} Agence du Numérique en Santé (ANS) (https://esante.gouv.fr)
+/*
+ * Copyright © 2022-2024 Agence du Numérique en Santé (ANS) (https://esante.gouv.fr)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,7 @@
  */
 package fr.ans.psc.toggle.controller;
 
+import fr.ans.psc.toggle.exception.InvalidParameterException;
 import fr.ans.psc.toggle.model.PsIdType;
 import fr.ans.psc.toggle.service.ToggleService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +43,26 @@ public class ToggleController {
     @PostMapping(value = "/toggle", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<Void> toggleRegistrySource(@RequestParam("from") String from, @RequestParam("to") String to, @RequestParam("toggleFile") MultipartFile mpFile) {
-        toggleService.toggle(mpFile, PsIdType.valueOf(from.toUpperCase()), PsIdType.valueOf(to.toUpperCase()));
+
+        final PsIdType sourceIdType = decodeIdType(from, "from");
+        final PsIdType destinationIdType = decodeIdType(to, "to");
+        toggleService.toggle(mpFile, sourceIdType, destinationIdType);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+
+    }
+
+    @PostMapping(value = "/remove", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<Void> removeFromRegistrySource(@RequestParam("from") String from, @RequestParam("to") String to, @RequestParam("toggleFile") MultipartFile mpFile) {
+        toggleService.removeToggle(mpFile, PsIdType.valueOf(from.toUpperCase()), PsIdType.valueOf(to.toUpperCase()));
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
-
+    private PsIdType decodeIdType(String name, final String parmName) {
+        try {
+            return PsIdType.valueOf(name.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidParameterException(parmName + ": " + e.getMessage(), e);
+        }
+    }
 }
