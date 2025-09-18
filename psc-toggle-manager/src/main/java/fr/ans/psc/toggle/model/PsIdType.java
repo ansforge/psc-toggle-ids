@@ -25,6 +25,7 @@ public enum PsIdType {
     CAB_RPPS("6"),
     RPPS("8"),
     ETUDIANT("9"),
+    PSI(""),         // <-- ajouté
     RAW("");
 
     /** The value. */
