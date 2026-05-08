@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @ContextConfiguration(classes = ToggleManagerApplication.class)
-public class LoadRefsMapFromFileTest {
+class LoadRefsMapFromFileTest {
 
     @Autowired
     private ToggleService toggleService;

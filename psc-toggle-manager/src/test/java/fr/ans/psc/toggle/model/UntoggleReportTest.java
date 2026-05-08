@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @ActiveProfiles("test")
 @ContextConfiguration(classes = ToggleManagerApplication.class)
-public class UntoggleReportTest {
+class UntoggleReportTest {
 
     @Test
     @DisplayName("foo")
