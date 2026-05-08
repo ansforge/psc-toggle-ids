@@ -55,7 +55,7 @@ public class TogglePsRefsTest {
 
     @Test
     @DisplayName("should successfully toggle PsRefs")
-    public void successfulToggle() {
+    void successfulToggle() {
         httpApiMockServer.stubFor(put("/v2/toggle")
         .willReturn(aResponse().withStatus(200)));
         httpApiMockServer.stubFor(get("/v2/ps/810107517681")
@@ -80,7 +80,7 @@ public class TogglePsRefsTest {
 
     @Test
     @DisplayName("should handle 4xx return codes")
-    public void toggleWithErrors() {
+    void toggleWithErrors() {
         httpApiMockServer.stubFor(put("/v2/toggle").withRequestBody(equalToJson(
                 "{\"returnStatus\":100," +
                         "\"nationalIdRef\":\"0016041030\"," +
