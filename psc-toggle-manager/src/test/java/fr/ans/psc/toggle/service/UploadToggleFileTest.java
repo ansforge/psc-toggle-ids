@@ -16,7 +16,6 @@
 package fr.ans.psc.toggle.service;
 
 import fr.ans.psc.toggle.ToggleManagerApplication;
-import fr.ans.psc.toggle.controller.ToggleController;
 import fr.ans.psc.toggle.exception.ToggleFileParsingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @ActiveProfiles("test")
 @ContextConfiguration(classes = ToggleManagerApplication.class)
-public class UploadToggleFileTest {
+class UploadToggleFileTest {
 
     @Autowired
     private ToggleService toggleService;
