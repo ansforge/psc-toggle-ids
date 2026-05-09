@@ -45,7 +45,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.put;
 @SpringBootTest
 @ActiveProfiles("test")
 @ContextConfiguration(classes = ToggleManagerApplication.class)
-public class ToggleServiceTest {
+class ToggleServiceTest {
 
     @Autowired
     private ToggleService toggleService;
@@ -65,7 +65,7 @@ public class ToggleServiceTest {
     }
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         MockitoAnnotations.openMocks(this).close();
         emailService.setEmailSender(emailSender);
     }

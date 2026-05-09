@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @ActiveProfiles("test")
 @ContextConfiguration(classes = ToggleManagerApplication.class)
-public class ReportTest {
+class ReportTest {
 
     @Test
     @DisplayName("tata")
