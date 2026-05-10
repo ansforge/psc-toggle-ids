@@ -15,7 +15,6 @@
  */
 package fr.ans.psc.toggle.controller.handlers;
 
-import fr.ans.psc.toggle.exception.ToggleFileParsingException;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.common.DataProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

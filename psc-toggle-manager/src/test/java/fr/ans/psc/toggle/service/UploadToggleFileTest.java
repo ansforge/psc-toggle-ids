@@ -17,7 +17,6 @@ package fr.ans.psc.toggle.service;
 
 import fr.ans.psc.toggle.ToggleManagerApplication;
 import fr.ans.psc.toggle.controller.ToggleController;
-import fr.ans.psc.toggle.exception.ToggleFileParsingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @ActiveProfiles("test")
